@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="./input.css" rel="stylesheet">
+    <link href="./output.css" rel="stylesheet">
+</head>
+
+<body class="h-screen">
+    <div id="container-div" class="flex flex-col items-center h-full justify-center">
+
+    </div>
+
+
+    <script>
+        
+        let tabLetreco = document.getElementById('container-div');
+        let colunas = 5;
+        let linhas = 6;
+
+        for (let linha = 0; linha < linhas; linha++) {
+
+            let linhaDiv = document.createElement('div');
+            linhaDiv.classList.add('flex'); 
+
+            for (let coluna= 0; coluna < colunas; coluna++) {
+
+                let blocosColunas = document.createElement('div');
+                blocosColunas.classList.add('flex','items-center','justify-center','bg-gray-200','m-1','w-14','h-14','border','border-blue-800');
+                blocosColunas.textContent = 'a'.toUpperCase(); 
+                blocosColunas.id = `l${linha}c${coluna}`
+                linhaDiv.appendChild(blocosColunas);
+            }
+            tabLetreco.appendChild(linhaDiv);
+        }
+
+    </script>
+</body>
+
+</html>
