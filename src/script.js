@@ -16,7 +16,7 @@ let linhas = 6;
 
 // let palavraSorteada = 'qwert'.toLowerCase()
 let palavraSorteada = ''
-let palavraNormal = []
+let palavraNormal = ''
 
 let setLinha = 0
 let setColuna = 0
@@ -122,19 +122,11 @@ const enterEvent = () => {
     // console.log('colunas' + setColuna)
     // console.log('linhas' + setLinha)
 
-    carregarPalavras()
-
-    let v1 = palavraNormal
-    let v5 = false
-
     for (let i = 0; i < 5; i++) { //verifica
 
-        let setColor = document.getElementById(`l${setLinha}c${i}`)
-
-        v5 = palavraNormal.filter(p => p.includes(setColor.textContent.toLowerCase()))
+        //iinplementar
       
     }
-    console.log(v5)
 
 
     let very = document.getElementById(`l${setLinha}c${setColuna}`)
