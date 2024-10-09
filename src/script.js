@@ -1,33 +1,3 @@
-let palavraSorteada = '';
-let palavraoriginal = '';
-
-async function carregarPalavras() {
-    const response = await fetch('./palavras.txt');
-    const data = await response.text();
-    const palavras = data.split('\n').filter(p => p.length === 5 && !p.includes('-'));
-    return palavras;
-}
-
-async function gerarPalavra() {
-    const palavrasCincoLetras = await carregarPalavras();
-    if (palavrasCincoLetras.length === 0) {
-        console.log('Não há palavras com 5 letras no arquivo.');
-        return;
-    }
-
-    const indiceAleatorio = Math.floor(Math.random() * palavrasCincoLetras.length);
-    const palavraSelecionada = palavrasCincoLetras[indiceAleatorio];
-
-    palavraoriginal = palavraSelecionada
-
-    // Removendo acentos e atribuindo à palavraSorteada
-    palavraSorteada = palavraSelecionada
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-
-    return console.log(`Palavra sortead==): ${palavraSorteada + ' ' +  palavraoriginal}`);
-}
-
 let containerBettwen = document.getElementById('containerBettwen')
 let tabLetreco = document.getElementById('containerDivTab');
 let tabTeclado = document.getElementById('containerDivTec');
@@ -39,14 +9,19 @@ let keyboards = [["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
 ["z", "x", "c", "v", "b", "n", "m", "ç"]]
 
 //remover os consoleslogs
-gerarPalavra()
+//wqrte
 
 let colunas = 5;
 let linhas = 6;
 
+let palavraSorteada = 'qwert'.toLowerCase()
 let palavradig = ""
+
 let setLinha = 0
 let setColuna = 0
+
+
+//funça cria tabela onde ficam os nimes -------------------------------------------------------
 
 for (let linha = 0; linha < linhas; linha++) {
 
@@ -69,6 +44,9 @@ for (let linha = 0; linha < linhas; linha++) {
     tabLetreco.appendChild(linhaDiv);
 }
 
+//-----------------------------------------------------------------------------------------
+
+//funcoes eventos enter mistrar tecla e etc 
 const eventteclas = (event) => {
     if (setLinha < 6) {
         let tecla = event.target.textContent;
@@ -93,8 +71,6 @@ const backspaceEvent = () => {
 
 const enterEvent = () => {
 
-    let ganhou = [false, false, false, false];
-
     if (setColuna > 4) {
         setColuna = 4
     }
@@ -107,14 +83,14 @@ const enterEvent = () => {
     let very = document.getElementById(`l${setLinha}c${setColuna}`)
 
     if (setLinha < 6 && very.textContent !== "") {
-        
+
         console.log('entrou aqui' + setLinha)
 
         let palavraDigitada = palavradig
         let resultado = [];
         let letrasJaUsadas = {};
 
-        for (let i = 0; i < palavraDigitada.length; i++) {
+        for (let i = 0; i < 5; i++) {
             let setColor = document.getElementById(`l${setLinha}c${i}`)
             console.log('valir de ' + i)
             console.log('valir de ' + palavradig)
@@ -123,21 +99,13 @@ const enterEvent = () => {
                 letrasJaUsadas[palavraDigitada[i]] = (letrasJaUsadas[palavraDigitada[i]] || 0) + 1;
                 setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40')
                 setColor.classList.add('bg-green-500', 'text-white', 'bg-opacity-60')
-            
-                ganhou[i] = true
-                const todosTrue = ganhou.every(item => item === true); // Verifica se todos são true
-
-                if (todosTrue) {
-                    // Ação a ser executada se todos forem true
-                    console.log("vc ganhou");
-                    alert()
-                }
             } else {
                 resultado.push({ letra: palavraDigitada[i], cor: "pendente" });
             }
         }
 
         for (let i = 0; i < palavraDigitada.length; i++) {
+            console.log(palavraDigitada)
             let setColor = document.getElementById(`l${setLinha}c${i}`)
             if (resultado[i].cor === "pendente") {
                 let letra = palavraDigitada[i];
@@ -147,7 +115,6 @@ const enterEvent = () => {
                 if (palavraSorteada.includes(letra) && usadasJa < totalNaSorteada) {
                     resultado[i].cor = "amarelo";
                     letrasJaUsadas[letra] = (letrasJaUsadas[letra] || 0) + 1;
-                    console.log(i)
                     setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40')
                     setColor.classList.add('bg-yellow-500', 'text-gray-200', 'bg-opacity-50')
                 } else {
@@ -179,6 +146,11 @@ const enterEvent = () => {
 function contarLetras(palavra, letra) {
     return palavra.split(letra).length - 1;
 }
+
+
+
+
+//funcao teclado e stylos -------------------------------------------------------------------------------------
 
 for (let linha = 0; linha < keyboards.length; linha++) {
 
