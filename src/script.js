@@ -14,11 +14,56 @@ let keyboards = [["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
 let colunas = 5;
 let linhas = 6;
 
-let palavraSorteada = 'qwert'.toLowerCase()
-let palavradig = ""
+// let palavraSorteada = 'qwert'.toLowerCase()
+let palavraSorteada = ''
+let palavraNormal = ''
+let verifica = true
+let valueVery = ''
 
 let setLinha = 0
 let setColuna = 0
+
+
+
+
+
+
+
+//sorteia palavras ---------------------------------------------------------------------
+async function carregarPalavras() {
+    const response = await fetch('./palavras.txt');
+    const data = await response.text();
+    const palavras = data.split('\n').filter(p => p.length === 5 && !p.includes('-'));
+    verifica = data.includes(valueVery)
+    return palavras;
+}
+
+async function gerarPalavra() {
+    const palavrasCincoLetras = await carregarPalavras();
+    if (palavrasCincoLetras.length === 0) {
+        console.log('Não há palavras com 5 letras no arquivo.');
+        return;
+    }
+
+    const indiceAleatorio = Math.floor(Math.random() * palavrasCincoLetras.length);
+    const palavraSelecionada = palavrasCincoLetras[indiceAleatorio];
+
+
+    palavraSorteada = palavraSelecionada
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+
+    console.log(`Palavra sorteada (sem acentos): ${palavraSorteada}`);
+}
+
+// Para testar a função, você pode chamar gerarPalavra()
+gerarPalavra();
+
+
+
+
+
+
 
 
 //funça cria tabela onde ficam os nimes -------------------------------------------------------
@@ -46,17 +91,14 @@ for (let linha = 0; linha < linhas; linha++) {
 
 //-----------------------------------------------------------------------------------------
 
+
 //funcoes eventos enter mistrar tecla e etc 
 const eventteclas = (event) => {
-    if (setLinha < 6) {
-        let tecla = event.target.textContent;
+    if (setLinha < 6 && setColuna < 5) {
         let getTeclas = document.getElementById(`l${setLinha}c${setColuna}`)
-        if (setColuna < 5) {
-            getTeclas.textContent = tecla
-            setColuna++
-            palavradig += tecla.toLowerCase()
-            console.log(setColuna);
-        }
+        getTeclas.textContent = event.target.textContent;
+        setColuna++
+        console.log(setColuna);
     }
 }
 
@@ -65,7 +107,6 @@ const backspaceEvent = () => {
         setColuna--
         let backspace = document.getElementById(`l${setLinha}c${setColuna}`)
         backspace.textContent = ''
-        // console.log(setColuna);
     }
 }
 
@@ -77,69 +118,94 @@ const enterEvent = () => {
     if (setLinha > 4) {
         setColuna = 4
     }
-    console.log('colunas' + setColuna)
-    console.log('linhas' + setLinha)
+    // console.log('colunas' + setColuna)
+    // console.log('linhas' + setLinha)
+
+
+    for (let i = 0; i < 5; i++) { //verifica
+
+        let setColor = document.getElementById(`l${setLinha}c${i}`)
+
+        valueVery += setColor.textContent.toLowerCase()
+    }
+
+    carregarPalavras(valueVery)
+    console.log(verifica)
+
+    console.log('verifica ' + valueVery)
 
     let very = document.getElementById(`l${setLinha}c${setColuna}`)
 
     if (setLinha < 6 && very.textContent !== "") {
 
-        console.log('entrou aqui' + setLinha)
-
-        let palavraDigitada = palavradig
         let resultado = [];
         let letrasJaUsadas = {};
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) { //verde
+
             let setColor = document.getElementById(`l${setLinha}c${i}`)
-            console.log('valir de ' + i)
-            console.log('valir de ' + palavradig)
-            if (palavraDigitada[i] === palavraSorteada[i]) {
-                resultado.push({ letra: palavraDigitada[i], cor: "verde" });
-                letrasJaUsadas[palavraDigitada[i]] = (letrasJaUsadas[palavraDigitada[i]] || 0) + 1;
+
+            if (setColor.textContent.toLowerCase() === palavraSorteada[i]) {
+
+                console.log('verde ' + setColor.textContent)
+                resultado.push({ letra: setColor.textContent, cor: "verde" });
+                letrasJaUsadas[setColor.textContent] = (letrasJaUsadas[setColor.textContent] || 0) + 1;
                 setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40')
                 setColor.classList.add('bg-green-500', 'text-white', 'bg-opacity-60')
+
             } else {
-                resultado.push({ letra: palavraDigitada[i], cor: "pendente" });
+                resultado.push({ letra: setColor.textContent, cor: "pendente" });
             }
         }
 
-        for (let i = 0; i < palavraDigitada.length; i++) {
-            console.log(palavraDigitada)
+        for (let i = 0; i < 5; i++) { //amarelo e preto 
+
             let setColor = document.getElementById(`l${setLinha}c${i}`)
+
             if (resultado[i].cor === "pendente") {
-                let letra = palavraDigitada[i];
+
+                let letra = setColor.textContent.toLowerCase();
                 let totalNaSorteada = contarLetras(palavraSorteada, letra);
                 let usadasJa = letrasJaUsadas[letra] || 0;
 
                 if (palavraSorteada.includes(letra) && usadasJa < totalNaSorteada) {
+
+                    console.log('amarelo ' + setColor.textContent);
                     resultado[i].cor = "amarelo";
                     letrasJaUsadas[letra] = (letrasJaUsadas[letra] || 0) + 1;
                     setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40')
                     setColor.classList.add('bg-yellow-500', 'text-gray-200', 'bg-opacity-50')
+
                 } else {
+
+                    console.log('preto ' + setColor.textContent);
                     resultado[i].cor = "cinza";
                     setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40')
                     setColor.classList.add('bg-gray-600', 'text-white', 'bg-opacity-50')
                 }
             }
         }
-        console.log('final do bglh')
+
         setLinha++
         setColuna = 0
-        palavradig = ''
+
+        //apenas efeitos -------------------------------------------------------------
 
         for (let i = 0; i < colunas; i++) {
+
             let setColor = document.getElementById(`l${setLinha - 1}c${i}`)
             setColor.classList.add('border-neutral-500')
             setColor.classList.remove('border-blue-500')
         }
 
         for (let i = 0; i < colunas; i++) {
+
             let setColor = document.getElementById(`l${setLinha}c${i}`)
             setColor.classList.remove('border-neutral-400')
             setColor.classList.add('border-blue-500')
         }
+
+        //------------------------------------------------------------------------------
     }
 }
 
