@@ -16,9 +16,7 @@ let linhas = 6;
 
 // let palavraSorteada = 'qwert'.toLowerCase()
 let palavraSorteada = ''
-let palavraNormal = ''
-let verifica = true
-let valueVery = ''
+let palavraNormal = []
 
 let setLinha = 0
 let setColuna = 0
@@ -33,8 +31,8 @@ let setColuna = 0
 async function carregarPalavras() {
     const response = await fetch('./palavras.txt');
     const data = await response.text();
-    const palavras = data.split('\n').filter(p => p.length === 5 && !p.includes('-'));
-    verifica = data.includes(valueVery)
+    const palavras = data.split('\n').filter(p => p.length === 5 && !p.includes('-'))
+    palavraNormal = palavras
     return palavras;
 }
 
@@ -52,6 +50,8 @@ async function gerarPalavra() {
     palavraSorteada = palavraSelecionada
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '');
+
+    //falta impleentaçãopra tirar o çççç
 
     console.log(`Palavra sorteada (sem acentos): ${palavraSorteada}`);
 }
@@ -110,6 +110,7 @@ const backspaceEvent = () => {
     }
 }
 
+
 const enterEvent = () => {
 
     if (setColuna > 4) {
@@ -121,18 +122,20 @@ const enterEvent = () => {
     // console.log('colunas' + setColuna)
     // console.log('linhas' + setLinha)
 
+    carregarPalavras()
+
+    let v1 = palavraNormal
+    let v5 = false
 
     for (let i = 0; i < 5; i++) { //verifica
 
         let setColor = document.getElementById(`l${setLinha}c${i}`)
 
-        valueVery += setColor.textContent.toLowerCase()
+        v5 = palavraNormal.filter(p => p.includes(setColor.textContent.toLowerCase()))
+      
     }
+    console.log(v5)
 
-    carregarPalavras(valueVery)
-    console.log(verifica)
-
-    console.log('verifica ' + valueVery)
 
     let very = document.getElementById(`l${setLinha}c${setColuna}`)
 
