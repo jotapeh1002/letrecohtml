@@ -1,61 +1,33 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="./input.css" rel="stylesheet">
-    <link href="./output.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="./input.css" rel="stylesheet">
+  <link href="./output.css" rel="stylesheet">
+  <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSH87y4lU9VOjTYETjIJr1iyjwJkue5W3WYRA&s">
 </head>
 
-<body class="h-screen">
-    <div class=" flex flex-col justify-center h-full items-center">
-        <div id="containerDivTab"></div>
-        <div id="containerDivTec"></div>
+<body id="body" class=" flex justify-center flex-col items-center bg-zinc-300">
+  <div id="containerBettwen" class="w-full">
+    <div id="nameTitulo" class="mb-14  text-3xl font-bold text-center">
+      <span class="text-gray-600">P</span>
+      <span class="text-gray-600">A</span>
+      <span class="text-green-600">L</span>
+      <span class="text-green-600">A</span>
+      <span class="text-yellow-600">V</span>
+      <span class="text-yellow-600">R</span>
+      <span class="text-gray-600">A</span>
+      <span class="text-gray-600">S</span>
     </div>
-
-
-    <script>
-
-        let tabLetreco = document.getElementById('containerDivTab');
-        let tabTeclado = document.getElementById('containerDivTec');
-        let colunas = 5;
-        let linhas = 6;
-
-        for (let linha = 0; linha < linhas; linha++) {
-
-            let linhaDiv = document.createElement('div');
-            linhaDiv.classList.add('flex');
-
-            for (let coluna = 0; coluna < colunas; coluna++) {
-
-                let blocosColunas = document.createElement('div');
-                blocosColunas.classList.add('flex', 'items-center', 'justify-center', 'bg-gray-200', 'm-1', 'w-14', 'h-14', 'border', 'border-blue-800');
-                blocosColunas.textContent = 'a'.toUpperCase();
-                blocosColunas.id = `l${linha}c${coluna}`
-                linhaDiv.appendChild(blocosColunas);
-            }
-            tabLetreco.appendChild(linhaDiv);
-        }
-
-        for (let linha = 0; linha < 3; linha++) {
-
-            let linhaDivTec = document.createElement('div');
-            linhaDivTec.classList.add('grid','grid-cols-10');
-
-            for (let coluna = 0; coluna < 10; coluna++) {
-
-                let blocosColunasTec = document.createElement('div');
-                blocosColunasTec.classList.add('flex', 'items-center', 'justify-center', 'bg-gray-200', 'm-1', 'w-10', 'h-10', 'border', 'border-blue-800');
-                blocosColunasTec.textContent = '2'.toUpperCase();
-                blocosColunasTec.id = `l${linha}c${coluna}`
-                linhaDivTec.appendChild(blocosColunasTec);
-            }
-            tabTeclado.appendChild(linhaDivTec);
-        }
-
-    </script>
+    <div class="w-full flex flex-col items-center">
+      <div id="containerDivTab"></div>
+      <div id="containerDivTec"></div>
+    </div>
+  </div>
+  <script src="./script.js"></script>
 </body>
 
 </html>
