@@ -8,12 +8,24 @@ let keyboards = [["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
 ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
 ["z", "x", "c", "v", "b", "n", "m", "ç"]/*, ['<-', 'ENTER']*/]
 
+
+
+
+//ajustar pq ele nao ta reconhecendo palavras com acetos e diz que nap tem
+
+/// motrar palavra certa no tabaela letreco pa so mostra sem acento
+
+//fazer animaçoes tela ganhador
+
+
+
 let colunas = 5;
 let linhas = 6;
 
 let palavraSorteada = ''
 let palavraNormal = ''
 let palavraJoin = '';
+let palavracomacento = ''
 let final = false
 
 let setLinha = 0
@@ -37,6 +49,7 @@ async function gerarPalavra() {
     const indiceAleatorio = Math.floor(Math.random() * palavrasCincoLetras.length);
     const palavraSelecionada = palavrasCincoLetras[indiceAleatorio];
 
+    palavracomacento = palavraSelecionada
 
     palavraSorteada = palavraSelecionada
         .normalize('NFD')
@@ -44,6 +57,7 @@ async function gerarPalavra() {
 
 
     console.log(`Palavra sorteada (sem acentos): ${palavraSorteada}`);
+    console.log(`Palavra sorteada (com acentos): ${palavracomacento}`);
 }
 
 gerarPalavra();
@@ -68,6 +82,39 @@ for (let linha = 0; linha < linhas; linha++) {
     }
     tabLetreco.appendChild(linhaDiv);
 }
+
+function mudarCor() {
+    const blinkDuration = 900; // Duração total do piscar em ms
+    const blinkInterval = 100;   // Intervalo entre as trocas de cor em ms
+    const setColorElements = [];  // Armazena os elementos a serem piscados
+    let count = 0;                // Contador para controlar quantas vezes piscar
+
+    // Adiciona todos os elementos ao array
+    for (let i = 0; i < 5; i++) {
+        setColorElements.push(document.getElementById(`l${setLinha}c${i}`));
+    }
+
+    // Define um intervalo para mudar a cor
+    const interval = setInterval(() => {
+        setColorElements.forEach((element) => {
+            element.classList.toggle('border-red-400');
+            element.classList.toggle('bg-red-400');
+            element.classList.toggle('border-blue-500');
+        });
+        count++;
+
+        // Para o piscar após 2 vezes
+        if (count >= 6) {
+            clearInterval(interval);
+            // Reverte para a cor original
+            setColorElements.forEach((element) => {
+                element.classList.remove('border-red-400', 'bg-red-400');
+                element.classList.add('border-blue-500');
+            });
+        }
+    }, blinkInterval);
+}
+
 
 const eventteclas = (event) => {
     if (setLinha < 6 && setColuna < 5) {
@@ -100,10 +147,35 @@ const validarPalavras = () => {
     return palavraJoin
 }
 
+function mostrarModal(txt,exibir) {
+    const modal = document.getElementById('modal');
+    const img = document.getElementById('imgmodal');
+    const palavracerta = document.getElementById('palavracerta');
+    const exibirpalavra = document.getElementById('exibirpalavra');
+    exibirpalavra.classList.add(exibir)
+    img.src = txt
+    modal.classList.remove('hidden'); // Mostra o modal
+    modal.classList.add('flex'); // Mostra o modal
+
+    palavracerta.textContent = palavracomacento.toUpperCase() 
+
+    // Fecha o modal quando o botão de fechar é clicado
+    const closeButton = document.getElementById('closeModal');
+    const reload = document.getElementById('recarregar');
+
+    reload.addEventListener('click', () => {
+        location.reload();
+    })
+    closeButton.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+}
+
+
 const enterEvent = () => {
 
     let valor = validarPalavras();
-    let trueorfalse = false;
+    let trueorfalse = false
 
     if (setColuna > 4) {
         setColuna = 4;
@@ -115,6 +187,11 @@ const enterEvent = () => {
 
     let very = document.getElementById(`l${setLinha}c${setColuna}`);
 
+    if (very.textContent == "") {
+        mudarCor()
+        return
+    }
+
     if (setLinha < 6 && very.textContent !== "") {
 
         for (let i = 0; i < palavraNormal.length; i++) {
@@ -122,9 +199,10 @@ const enterEvent = () => {
                 trueorfalse = true;
             }
         }
-
         if (trueorfalse == false) {
             setColuna = 5;
+            mudarCor()
+            return
         }
         if (trueorfalse == false && setLinha > 4) {
             setLinha = 4;
@@ -176,12 +254,23 @@ const enterEvent = () => {
             }
         }
 
+        // Verifica se o jogador ganhou
+        const todasVerdes = resultado.every(item => item.cor === "verde");
+        if (todasVerdes) {
+            mostrarModal('ganhou.png','bg-green-500')
+        }
+
+        if(setLinha > 4 && todasVerdes !== true){
+
+            mostrarModal('perdeu.png','bg-red-500')
+        }
+
         // Avança a linha
         setLinha++;
         setColuna = 0;
 
         // Ajuste de bordas
-        if (setLinha < 6) {
+        if (setLinha < 6 && todasVerdes !== true) {
             for (let i = 0; i < colunas; i++) {
                 let setColor = document.getElementById(`l${setLinha - 1}c${i}`);
                 setColor.classList.add('border-neutral-500');
@@ -200,6 +289,8 @@ const enterEvent = () => {
                 setColor.classList.remove('border-blue-500');
             }
         }
+
+        
     }
 }
 
