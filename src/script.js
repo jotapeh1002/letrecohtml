@@ -51,9 +51,11 @@ async function gerarPalavra() {
 
     palavracomacento = palavraSelecionada
 
-    palavraSorteada = palavraSelecionada
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
+    // palavraSorteada = palavraSelecionada
+    //     .normalize('NFD')
+    //     .replace(/[\u0300-\u036f]/g, '');
+
+    palavraSorteada = "casos"
 
 
     console.log(`Palavra sorteada (sem acentos): ${palavraSorteada}`);
