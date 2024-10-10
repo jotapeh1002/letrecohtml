@@ -26269,6 +26269,7 @@ arejes
 arejo
 arejou
 arem
+ppppp
 aremo
 aremos
 arena
@@ -189365,6 +189366,7 @@ pareias
 pareie
 pareiem
 pareies
+areio
 pareio
 pareis
 parelha

@@ -6,28 +6,19 @@ body.classList.add('flex', 'justify-center', 'flex-col', 'items-center', 'bg-zin
 
 let keyboards = [["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
 ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-["z", "x", "c", "v", "b", "n", "m", "ç"]]
-
-//remover os consoleslogs
-//wqrte
+["z", "x", "c", "v", "b", "n", "m", "ç"]/*, ['<-', 'ENTER']*/]
 
 let colunas = 5;
 let linhas = 6;
 
-// let palavraSorteada = 'qwert'.toLowerCase()
 let palavraSorteada = ''
 let palavraNormal = ''
+let palavraJoin = '';
+let final = false
 
 let setLinha = 0
 let setColuna = 0
 
-
-
-
-
-
-
-//sorteia palavras ---------------------------------------------------------------------
 async function carregarPalavras() {
     const response = await fetch('./palavras.txt');
     const data = await response.text();
@@ -51,22 +42,11 @@ async function gerarPalavra() {
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '');
 
-    //falta impleentaçãopra tirar o çççç
 
     console.log(`Palavra sorteada (sem acentos): ${palavraSorteada}`);
 }
 
-// Para testar a função, você pode chamar gerarPalavra()
 gerarPalavra();
-
-
-
-
-
-
-
-
-//funça cria tabela onde ficam os nimes -------------------------------------------------------
 
 for (let linha = 0; linha < linhas; linha++) {
 
@@ -78,7 +58,7 @@ for (let linha = 0; linha < linhas; linha++) {
         let blocosColunas = document.createElement('div');
         blocosColunas.classList.add('flex', 'items-center', 'text-zinc-600', 'justify-center', 'bg-zinc-400', 'bg-opacity-40', 'm-1',
             'w-14', 'h-14', 'border-4', 'border-neutral-400', 'p-7', 'rounded-lg', 'text-lg');
-        // blocosColunas.textContent = 'a'.toUpperCase();
+
         if (linha === 0) {
             blocosColunas.classList.remove('border-neutral-400')
             blocosColunas.classList.add('border-blue-500');
@@ -89,10 +69,6 @@ for (let linha = 0; linha < linhas; linha++) {
     tabLetreco.appendChild(linhaDiv);
 }
 
-//-----------------------------------------------------------------------------------------
-
-
-//funcoes eventos enter mistrar tecla e etc 
 const eventteclas = (event) => {
     if (setLinha < 6 && setColuna < 5) {
         let getTeclas = document.getElementById(`l${setLinha}c${setColuna}`)
@@ -103,115 +79,133 @@ const eventteclas = (event) => {
 }
 
 const backspaceEvent = () => {
-    if (setColuna > 0 && setLinha < 5) {
+    if (setColuna > 0 && setLinha < 6) {
         setColuna--
         let backspace = document.getElementById(`l${setLinha}c${setColuna}`)
         backspace.textContent = ''
     }
 }
 
+const validarPalavras = () => {
+    palavraJoin = ''
+
+    for (let i = 0; i < 5; i++) {
+
+        let very = document.getElementById(`l${setLinha}c${i}`)
+        let veryOut = very.textContent.toLowerCase()
+        palavraJoin += veryOut
+    }
+
+    console.log('jon ' + palavraJoin)
+    return palavraJoin
+}
 
 const enterEvent = () => {
 
+    let valor = validarPalavras();
+    let trueorfalse = false;
+
     if (setColuna > 4) {
-        setColuna = 4
+        setColuna = 4;
     }
     if (setLinha > 4) {
-        setColuna = 4
-    }
-    // console.log('colunas' + setColuna)
-    // console.log('linhas' + setLinha)
-
-    for (let i = 0; i < 5; i++) { //verifica
-
-        //iinplementar
-      
+        setLinha = 5;
+        final = true;
     }
 
-
-    let very = document.getElementById(`l${setLinha}c${setColuna}`)
+    let very = document.getElementById(`l${setLinha}c${setColuna}`);
 
     if (setLinha < 6 && very.textContent !== "") {
+
+        for (let i = 0; i < palavraNormal.length; i++) {
+            if (palavraNormal[i] === valor) {
+                trueorfalse = true;
+            }
+        }
+
+        if (trueorfalse == false) {
+            setColuna = 5;
+        }
+        if (trueorfalse == false && setLinha > 4) {
+            setLinha = 4;
+        }
+    }
+
+    if (setLinha < 6 && very.textContent !== "" && trueorfalse == true) {
 
         let resultado = [];
         let letrasJaUsadas = {};
 
-        for (let i = 0; i < 5; i++) { //verde
+        // Copiando a palavra sorteada para evitar mudanças na comparação
+        let palavraTemp = [...palavraSorteada];
 
-            let setColor = document.getElementById(`l${setLinha}c${i}`)
+        // Primeira passada: marca verde para as letras que estão na posição correta
+        for (let i = 0; i < 5; i++) {
+            let setColor = document.getElementById(`l${setLinha}c${i}`);
+            let letraAtual = setColor.textContent.toLowerCase();
 
-            if (setColor.textContent.toLowerCase() === palavraSorteada[i]) {
-
-                console.log('verde ' + setColor.textContent)
-                resultado.push({ letra: setColor.textContent, cor: "verde" });
-                letrasJaUsadas[setColor.textContent] = (letrasJaUsadas[setColor.textContent] || 0) + 1;
-                setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40')
-                setColor.classList.add('bg-green-500', 'text-white', 'bg-opacity-60')
-
+            if (letraAtual === palavraSorteada[i]) {
+                resultado.push({ letra: letraAtual, cor: "verde" });
+                letrasJaUsadas[letraAtual] = (letrasJaUsadas[letraAtual] || 0) + 1;
+                palavraTemp[i] = null; // Marca como usada para evitar contar novamente
+                setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40');
+                setColor.classList.add('bg-green-500', 'text-white', 'bg-opacity-60');
             } else {
-                resultado.push({ letra: setColor.textContent, cor: "pendente" });
+                resultado.push({ letra: letraAtual, cor: "pendente" });
             }
         }
 
-        for (let i = 0; i < 5; i++) { //amarelo e preto 
-
-            let setColor = document.getElementById(`l${setLinha}c${i}`)
+        // Segunda passada: marca amarelo para as letras que estão presentes, mas em posição errada
+        for (let i = 0; i < 5; i++) {
+            let setColor = document.getElementById(`l${setLinha}c${i}`);
+            let letraAtual = setColor.textContent.toLowerCase();
 
             if (resultado[i].cor === "pendente") {
+                let posicaoErrada = palavraTemp.indexOf(letraAtual);
 
-                let letra = setColor.textContent.toLowerCase();
-                let totalNaSorteada = contarLetras(palavraSorteada, letra);
-                let usadasJa = letrasJaUsadas[letra] || 0;
-
-                if (palavraSorteada.includes(letra) && usadasJa < totalNaSorteada) {
-
-                    console.log('amarelo ' + setColor.textContent);
+                if (posicaoErrada !== -1) {
                     resultado[i].cor = "amarelo";
-                    letrasJaUsadas[letra] = (letrasJaUsadas[letra] || 0) + 1;
-                    setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40')
-                    setColor.classList.add('bg-yellow-500', 'text-gray-200', 'bg-opacity-50')
-
+                    palavraTemp[posicaoErrada] = null; // Marca a posição como usada
+                    setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40');
+                    setColor.classList.add('bg-yellow-500', 'text-gray-200', 'bg-opacity-50');
                 } else {
-
-                    console.log('preto ' + setColor.textContent);
                     resultado[i].cor = "cinza";
-                    setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40')
-                    setColor.classList.add('bg-gray-600', 'text-white', 'bg-opacity-50')
+                    setColor.classList.remove('bg-zinc-400', 'text-zinc-600', 'bg-opacity-40');
+                    setColor.classList.add('bg-gray-600', 'text-white', 'bg-opacity-50');
                 }
             }
         }
 
-        setLinha++
-        setColuna = 0
+        // Avança a linha
+        setLinha++;
+        setColuna = 0;
 
-        //apenas efeitos -------------------------------------------------------------
+        // Ajuste de bordas
+        if (setLinha < 6) {
+            for (let i = 0; i < colunas; i++) {
+                let setColor = document.getElementById(`l${setLinha - 1}c${i}`);
+                setColor.classList.add('border-neutral-500');
+                setColor.classList.remove('border-blue-500');
+            }
 
-        for (let i = 0; i < colunas; i++) {
-
-            let setColor = document.getElementById(`l${setLinha - 1}c${i}`)
-            setColor.classList.add('border-neutral-500')
-            setColor.classList.remove('border-blue-500')
+            for (let i = 0; i < colunas; i++) {
+                let setColor = document.getElementById(`l${setLinha}c${i}`);
+                setColor.classList.remove('border-neutral-400');
+                setColor.classList.add('border-blue-500');
+            }
+        } else {
+            for (let i = 0; i < colunas; i++) {
+                let setColor = document.getElementById(`l${setLinha - 1}c${i}`);
+                setColor.classList.add('border-neutral-500');
+                setColor.classList.remove('border-blue-500');
+            }
         }
-
-        for (let i = 0; i < colunas; i++) {
-
-            let setColor = document.getElementById(`l${setLinha}c${i}`)
-            setColor.classList.remove('border-neutral-400')
-            setColor.classList.add('border-blue-500')
-        }
-
-        //------------------------------------------------------------------------------
     }
 }
 
 function contarLetras(palavra, letra) {
     return palavra.split(letra).length - 1;
 }
-
-
-
-
-//funcao teclado e stylos -------------------------------------------------------------------------------------
 
 for (let linha = 0; linha < keyboards.length; linha++) {
 
@@ -221,15 +215,17 @@ for (let linha = 0; linha < keyboards.length; linha++) {
 
         let blocosColunasTec = document.createElement('button');
         blocosColunasTec.classList.add('bg-blue-500', 'm-1',
-            'h-14', 'text-white', 'shadow-sm', 'w-full', 'max-w-10', 'rounded-lg', 'hover:-translate-y-1');
+            'h-[50px]', 'text-white', 'shadow-sm', 'w-full', 'max-w-10', 'rounded-lg', 'sm:hover:-translate-y-1', 'outline-none');
 
         blocosColunasTec.textContent = keyboards[linha][coluna].toLocaleUpperCase()
 
         blocosColunasTec.id = `lt${linha}ct${coluna}`
-        blocosColunasTec.addEventListener('click', eventteclas)
+        if ((linha !== 3) && (linha !== 3)) {
+            blocosColunasTec.addEventListener('click', eventteclas)
+        }
 
-        tabTeclado.classList.add('translate-y-7', 'flex-col', 'px-3', 'flex', 'items-center', 'w-full')
-        linhaDivTec.classList.add('flex', 'items-center', 'justify-center', 'w-full', 'max-w-[600px]')
+        tabTeclado.classList.add('mt-8', 'flex-col', 'px-3', 'flex', 'items-center', 'w-full')
+        linhaDivTec.classList.add('flex', 'items-center', 'justify-center', 'w-full', 'max-w-[430px]', 'sm:max-w-[600px]')
         linhaDivTec.appendChild(blocosColunasTec);
         tabTeclado.appendChild(linhaDivTec);
     }
@@ -237,7 +233,7 @@ for (let linha = 0; linha < keyboards.length; linha++) {
         let buttonBackspace = document.createElement('button');
         buttonBackspace.textContent = '<-'
         buttonBackspace.classList.add('bg-blue-500', 'text-white', 'hover:-translate-y-1',
-            'h-14', 'w-[10px]', 'min-w-14', 'mr-1', 'ml-1', 'rounded-lg', 'border', 'border-blue-500')
+            'h-[50px]', 'w-[10px]', 'min-w-14', 'mr-1', 'ml-1', 'rounded-lg', 'border', 'border-blue-500')
         buttonBackspace.addEventListener('click', backspaceEvent)
         linhaDivTec.appendChild(buttonBackspace);
     }
@@ -247,7 +243,7 @@ for (let linha = 0; linha < keyboards.length; linha++) {
         buttonAdicionais.addEventListener('click', enterEvent)
         linhaDivTec.classList.add('sm:translate-x-3')
         buttonAdicionais.classList.add('bg-blue-500', 'text-white', 'hover:-translate-y-1',
-            'h-14', 'w-[70px]', 'min-w-20', 'mr-1', 'ml-1', 'rounded-lg', 'border', 'border-blue-500')
+            'h-[50px]', 'w-[70px]', 'min-w-20', 'mr-1', 'ml-1', 'rounded-lg', 'border', 'border-blue-500')
         linhaDivTec.appendChild(buttonAdicionais);
     }
     if (linha == 0) {
